@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url';
 const mod = await import(pathToFileURL('./src/lib/filters/combined/combined').href); 
 const { combinedFilter } = mod; 
 const inputs = { 
-    basic: [1, 3, 5, 7, 9, 999], 
+    basic: [4,2,8,3,9,4,10], 
     edges: [], 
     zeros: [0], 
     small: [2, 3, 4] 

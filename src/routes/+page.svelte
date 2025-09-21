@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { cubes } from '$lib/filters';
-  let raw = '1 3 5 7 9 999';
+  import { largestNumbers } from '$lib/filters';
+  let raw = '5 10 120 58 2017 231';
   $: input = raw.trim().split(/\s+/).filter(Boolean).map(Number);
-  $: output = cubes(input);
+  $: output = largestNumbers(input);
 </script>
 
 <h1>Sequence Filter Demo</h1>
