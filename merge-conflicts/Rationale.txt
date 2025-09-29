@@ -1,0 +1,10 @@
+*   Using a merge editor tool with VsCode, or meld for example as an editor. 
+    Simplifies the usage, direction and results of the conflict upon fixing.
+    In comparison without an editor, the user can miss a file, cause an 
+    unexpected result and not have comparison between merge file conflicts.
+
+*   The pragmatic results of the conflict were in accordance to the comparison
+    between the branch A and branch B files for the button, and even the demo.txt,
+    Using the visual aid and working on A and B the expect file for Button.svelte
+    was a result of the multiple meassures to ensure no conflicts were pushed into
+    the main repository.
