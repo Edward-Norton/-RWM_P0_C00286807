@@ -1,9 +1,18 @@
 <script lang="ts">
 	import ChecklistItem from '$lib/components/ChecklistItem.svelte';
+    import ChecklistProgress from '$lib/components/ChecklistProgress.svelte';
 
 	let item1Done = $state(false);
 	let item2Done = $state(false);
 	let item3Done = $state(false);
+
+    const items = [
+		{ id: '1', label: 'Task 1', done: false },
+		{ id: '2', label: 'Task 2', done: false },
+		{ id: '3', label: 'Task 3', done: false },
+		{ id: '4', label: 'Task 4', done: false },
+		{ id: '5', label: 'Task 5', done: false }
+	];
 
 	function handleChange(detail: { id: string; done: boolean }) {
 		console.log('Change event:', detail);
@@ -28,6 +37,10 @@ Item 2: {item2Done}
 Item 3: {item3Done}
 		</pre>
 	</div>
+
+    <h1>ChecklistProgress Test Page</h1>
+	
+	<ChecklistProgress {items} />
 </div>
 
 <style>
