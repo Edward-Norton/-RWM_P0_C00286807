@@ -25,6 +25,10 @@
 	let submittedCompleted = $state(0);
 	let submittedTotal = $state(items.length);
 	let submittedPercent = $state(0);
+	
+	// Progress bar values
+	let targetPercent = $state(0); // Snaps immediately (light bar)
+	let animatedPercent = $state(0); // Animates smoothly (dark bar)
 
 	function handleItemChange(detail: { id: string; done: boolean }) {
 		const { id, done } = detail;
@@ -41,11 +45,20 @@
 		submittedCompleted = $localCompletedStore;
 		submittedTotal = $localItemsStore.length;
 		submittedPercent = $localPercentStore;
+		
+		// Target snaps immediately
+		targetPercent = submittedPercent;
+		
+		// Animated bar transitions smoothly (CSS will handle the animation)
+		// We use a tiny delay to ensure the target has updated first
+		requestAnimationFrame(() => {
+			animatedPercent = submittedPercent;
+		});
 	}
 </script>
 
-<div class="wrapper-container">  <!-- RENAMED from checklist-progress -->
-	<div class="task-list">  <!-- RENAMED from items -->
+<div class="wrapper-container">
+	<div class="task-list">
 		{#each $localItemsStore as item (item.id)}
 			<ChecklistItem 
 				id={item.id} 
@@ -56,16 +69,36 @@
 		{/each}
 	</div>
 
-	<div class="action-bar">  <!-- RENAMED from controls -->
+	<div class="action-bar">
 		<button onclick={handleSubmit}>Submit version</button>
 		<div data-testid="progress-label">
 			{submittedCompleted}/{submittedTotal} ({submittedPercent}%)
 		</div>
 	</div>
+
+	<!-- Progress Bar -->
+	<div class="progress-container">
+		<div class="progress-track">
+			<!-- Light bar (target) - snaps immediately -->
+			<div 
+				class="progress-target" 
+				style="width: {targetPercent}%"
+				data-testid="progress-target"
+				data-percent={targetPercent}
+			></div>
+			<!-- Dark bar (animated) - animates smoothly -->
+			<div 
+				class="progress-animated" 
+				style="width: {animatedPercent}%"
+				data-testid="progress-animated"
+				data-percent={animatedPercent}
+			></div>
+		</div>
+	</div>
 </div>
 
 <style>
-	.wrapper-container {  /* RENAMED */
+	.wrapper-container {
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
@@ -74,13 +107,13 @@
 		border-radius: 0.5rem;
 	}
 
-	.task-list {  /* RENAMED */
+	.task-list {
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
 	}
 
-	.action-bar {  /* RENAMED */
+	.action-bar {
 		display: flex;
 		align-items: center;
 		gap: 1rem;
@@ -99,5 +132,39 @@
 
 	button:hover {
 		background: #45a049;
+	}
+
+	/* Progress Bar Styles */
+	.progress-container {
+		margin-top: 1rem;
+	}
+
+	.progress-track {
+		position: relative;
+		width: 100%;
+		height: 24px;
+		background: #e0e0e0;
+		border-radius: 12px;
+		overflow: hidden;
+	}
+
+	.progress-target {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 100%;
+		background: #a5d6a7; /* Light green - snaps immediately */
+		border-radius: 12px;
+		transition: none; /* No animation - snaps instantly */
+	}
+
+	.progress-animated {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 100%;
+		background: #4caf50; /* Dark green - animates */
+		border-radius: 12px;
+		transition: width 1s ease-out; /* 1 second animation */
 	}
 </style>
