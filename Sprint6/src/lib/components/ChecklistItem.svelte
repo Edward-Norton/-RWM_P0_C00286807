@@ -15,13 +15,13 @@
 	}
 </script>
 
-<label>
-	<input type="checkbox" checked={done} onchange={handleChange} />
+<label class="item-wrapper">  <!-- RENAMED from label -->
+	<input type="checkbox" checked={done} onchange={handleChange} class="check-input" />  <!-- Added class -->
 	{label}
 </label>
 
 <style>
-	label {
+	.item-wrapper {  /* RENAMED */
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
@@ -29,7 +29,7 @@
 		padding: 0.5rem;
 	}
 
-	input[type='checkbox'] {
+	.check-input {  /* RENAMED */
 		cursor: pointer;
 	}
 </style>

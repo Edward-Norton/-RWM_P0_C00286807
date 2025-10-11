@@ -9,7 +9,6 @@
 
 	let { items = [] }: Props = $props();
 
-	// Create LOCAL stores for this instance (not global)
 	const localItemsStore = writable<Item[]>([]);
 	const localCompletedStore = derived(
 		localItemsStore,
@@ -19,12 +18,10 @@
 		$items.length ? Math.round((100 * $items.filter((item) => item.done).length) / $items.length) : 0
 	);
 
-	// Initialize local store with items
 	$effect(() => {
 		localItemsStore.set(items.map(item => ({ ...item })));
 	});
 
-	// Submitted/visible state (gated behind button)
 	let submittedCompleted = $state(0);
 	let submittedTotal = $state(items.length);
 	let submittedPercent = $state(0);
@@ -41,15 +38,14 @@
 	}
 
 	function handleSubmit() {
-		// Copy from derived stores to visible UI only on submit
 		submittedCompleted = $localCompletedStore;
 		submittedTotal = $localItemsStore.length;
 		submittedPercent = $localPercentStore;
 	}
 </script>
 
-<div class="checklist-progress">
-	<div class="items">
+<div class="wrapper-container">  <!-- RENAMED from checklist-progress -->
+	<div class="task-list">  <!-- RENAMED from items -->
 		{#each $localItemsStore as item (item.id)}
 			<ChecklistItem 
 				id={item.id} 
@@ -60,7 +56,7 @@
 		{/each}
 	</div>
 
-	<div class="controls">
+	<div class="action-bar">  <!-- RENAMED from controls -->
 		<button onclick={handleSubmit}>Submit version</button>
 		<div data-testid="progress-label">
 			{submittedCompleted}/{submittedTotal} ({submittedPercent}%)
@@ -69,7 +65,7 @@
 </div>
 
 <style>
-	.checklist-progress {
+	.wrapper-container {  /* RENAMED */
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
@@ -78,13 +74,13 @@
 		border-radius: 0.5rem;
 	}
 
-	.items {
+	.task-list {  /* RENAMED */
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
 	}
 
-	.controls {
+	.action-bar {  /* RENAMED */
 		display: flex;
 		align-items: center;
 		gap: 1rem;

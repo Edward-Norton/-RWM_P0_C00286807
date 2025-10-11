@@ -1,3 +1,11 @@
+/**
+ * Test Selector Strategy (Step 7):
+ * - Use getByRole() for semantic elements (buttons, checkboxes)
+ * - Use getByTestId() for specific UI elements
+ * - Use getByText() for user-visible text
+ * - Avoid CSS selectors, :nth-child, or class names
+ * This ensures tests remain stable even when CSS classes change
+ */
 import { page } from '@vitest/browser/context';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
