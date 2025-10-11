@@ -1,14 +1,17 @@
 <script lang="ts">
 	import ChecklistItem from './ChecklistItem.svelte';
+	import { itemsStore, completedStore, percentStore, type Item } from '$lib/stores/checklist';
 
 	interface Props {
-		items?: Array<{ id: string; label: string; done: boolean }>;
+		items?: Item[];
 	}
 
 	let { items = [] }: Props = $props();
 
-	// Internal state (live tracking as user checks/unchecks)
-	let currentItems = $state(items.map(item => ({ ...item })));
+	// Initialize the store with items
+	$effect(() => {
+		itemsStore.set(items.map(item => ({ ...item })));
+	});
 
 	// Submitted/visible state (gated behind button)
 	let submittedCompleted = $state(0);
@@ -17,23 +20,26 @@
 
 	function handleItemChange(detail: { id: string; done: boolean }) {
 		const { id, done } = detail;
-		const item = currentItems.find((item) => item.id === id);
-		if (item) {
-			item.done = done;
-		}
+		itemsStore.update(items => {
+			const item = items.find(item => item.id === id);
+			if (item) {
+				item.done = done;
+			}
+			return items;
+		});
 	}
 
 	function handleSubmit() {
-		submittedCompleted = currentItems.filter((item) => item.done).length;
-		submittedTotal = currentItems.length;
-		submittedPercent =
-			submittedTotal > 0 ? Math.round((submittedCompleted / submittedTotal) * 100) : 0;
+		// Copy from derived stores to visible UI only on submit
+		submittedCompleted = $completedStore;
+		submittedTotal = $itemsStore.length;
+		submittedPercent = $percentStore;
 	}
 </script>
 
 <div class="checklist-progress">
 	<div class="items">
-		{#each currentItems as item (item.id)}
+		{#each $itemsStore as item (item.id)}
 			<ChecklistItem 
 				id={item.id} 
 				label={item.label} 
