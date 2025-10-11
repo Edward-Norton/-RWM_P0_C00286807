@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { writable, derived } from 'svelte/store';
 	import ChecklistItem from './ChecklistItem.svelte';
-	import { itemsStore, completedStore, percentStore, type Item } from '$lib/stores/checklist';
+	import type { Item } from '$lib/stores/checklist';
 
 	interface Props {
 		items?: Item[];
@@ -8,9 +9,19 @@
 
 	let { items = [] }: Props = $props();
 
-	// Initialize the store with items
+	// Create LOCAL stores for this instance (not global)
+	const localItemsStore = writable<Item[]>([]);
+	const localCompletedStore = derived(
+		localItemsStore,
+		($items) => $items.filter((item) => item.done).length
+	);
+	const localPercentStore = derived(localItemsStore, ($items) =>
+		$items.length ? Math.round((100 * $items.filter((item) => item.done).length) / $items.length) : 0
+	);
+
+	// Initialize local store with items
 	$effect(() => {
-		itemsStore.set(items.map(item => ({ ...item })));
+		localItemsStore.set(items.map(item => ({ ...item })));
 	});
 
 	// Submitted/visible state (gated behind button)
@@ -20,7 +31,7 @@
 
 	function handleItemChange(detail: { id: string; done: boolean }) {
 		const { id, done } = detail;
-		itemsStore.update(items => {
+		localItemsStore.update(items => {
 			const item = items.find(item => item.id === id);
 			if (item) {
 				item.done = done;
@@ -31,15 +42,15 @@
 
 	function handleSubmit() {
 		// Copy from derived stores to visible UI only on submit
-		submittedCompleted = $completedStore;
-		submittedTotal = $itemsStore.length;
-		submittedPercent = $percentStore;
+		submittedCompleted = $localCompletedStore;
+		submittedTotal = $localItemsStore.length;
+		submittedPercent = $localPercentStore;
 	}
 </script>
 
 <div class="checklist-progress">
 	<div class="items">
-		{#each $itemsStore as item (item.id)}
+		{#each $localItemsStore as item (item.id)}
 			<ChecklistItem 
 				id={item.id} 
 				label={item.label} 

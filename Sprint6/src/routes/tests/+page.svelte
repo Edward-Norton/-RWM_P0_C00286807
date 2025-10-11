@@ -1,12 +1,13 @@
 <script lang="ts">
 	import ChecklistItem from '$lib/components/ChecklistItem.svelte';
-    import ChecklistProgress from '$lib/components/ChecklistProgress.svelte';
+	import ChecklistProgress from '$lib/components/ChecklistProgress.svelte';
+	import { itemsStore, completedStore, percentStore } from '$lib/stores/checklist';
 
 	let item1Done = $state(false);
 	let item2Done = $state(false);
 	let item3Done = $state(false);
 
-    const items = [
+	const items = [
 		{ id: '1', label: 'Task 1', done: false },
 		{ id: '2', label: 'Task 2', done: false },
 		{ id: '3', label: 'Task 3', done: false },
@@ -38,9 +39,18 @@ Item 3: {item3Done}
 		</pre>
 	</div>
 
-    <h1>ChecklistProgress Test Page</h1>
+	<h1>ChecklistProgress Test Page</h1>
 	
 	<ChecklistProgress {items} />
+
+	<div class="test-section">
+		<h2>Store State (Live - updates as you check boxes)</h2>
+		<pre>
+Completed: {$completedStore} / {$itemsStore.length}
+Percentage: {$percentStore}%
+		</pre>
+		<p><em>Note: This updates immediately, but the component's displayed progress is gated by the Submit button.</em></p>
+	</div>
 </div>
 
 <style>
@@ -71,5 +81,15 @@ Item 3: {item3Done}
 		background: #f5f5f5;
 		padding: 1rem;
 		border-radius: 0.25rem;
+	}
+
+	p {
+		margin-top: 0.5rem;
+		color: #666;
+		font-size: 0.9rem;
+	}
+
+	em {
+		color: #e67e22;
 	}
 </style>
