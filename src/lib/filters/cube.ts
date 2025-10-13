@@ -5,5 +5,5 @@ export function cube(x: number): number {
 
 // Map over a sequence
 export function cubes(xs: number[]): number[] {
-  return xs.map((value) => cube(value));
+  return xs.map(cube);
 }
