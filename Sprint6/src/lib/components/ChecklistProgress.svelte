@@ -5,9 +5,10 @@
 
 	interface Props {
 		items?: Item[];
+		target?: number;
 	}
 
-	let { items = [] }: Props = $props();
+	let { items = [], target=80 }: Props = $props();
 
 	const localItemsStore = writable<Item[]>([]);
 	const localCompletedStore = derived(
@@ -94,6 +95,28 @@
 
 			<div class="progress-target" style="width: {targetPercent}%" data-testid="progress-target" data-percent={targetPercent}></div>
 			<div class="progress-animated" style="width: {animatedPercent}%" data-testid="progress-animated" data-percent={animatedPercent}></div>
+			<!-- Light bar (target) - snaps immediately -->
+			<div 
+				class="progress-target" 
+				style="width: {targetPercent}%"
+				data-testid="progress-target"
+				data-percent={targetPercent}
+			></div>
+			<!-- Dark bar (animated) - animates smoothly -->
+			<div 
+				class="progress-animated" 
+				style="width: {animatedPercent}%"
+				data-testid="progress-animated"
+				data-percent={animatedPercent}
+			></div>
+			<!-- Goal Line -->
+			 <div 
+				class="goal-line {animatedPercent >= target ? 'goal-reached' : ''}" 
+				style="left: calc({target}% - 1px)"
+				data-testid="goal-line"
+			>
+				<span class="goal-label">{target}%</span>
+			</div>
 		</div>
 	</div>
 </div>
@@ -196,5 +219,28 @@
 		background: #4caf50; /* Dark green - animates */
 		border-radius: 12px;
 		transition: width 1s ease-out; /* 1 second animation */
+	}
+
+	.goal-line {
+		position: absolute;
+		top: 0;
+		height: 100%;
+		width: 2px;
+		background: #f44336;
+	}
+
+	.goal-line.goal-reached {
+		background: #2e7d32;
+	}
+
+	.goal-label {
+		position: absolute;
+		top: -1.25rem;
+		left: 50%;
+		transform: translateX(-50%);
+		font-size: 0.75rem;
+		color: #555;
+		font-weight: 500;
+		white-space: nowrap;
 	}
 </style>
