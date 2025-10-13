@@ -5,9 +5,10 @@
 
 	interface Props {
 		items?: Item[];
+		target?: number;
 	}
 
-	let { items = [] }: Props = $props();
+	let { items = [], target=80 }: Props = $props();
 
 	const localItemsStore = writable<Item[]>([]);
 	const localCompletedStore = derived(
@@ -25,6 +26,7 @@
 	let submittedCompleted = $state(0);
 	let submittedTotal = $state(items.length);
 	let submittedPercent = $state(0);
+	const milestones = [25, 50, 75, 100];
 	
 	// Progress bar values
 	let targetPercent = $state(0); // Snaps immediately (light bar)
@@ -76,9 +78,23 @@
 		</div>
 	</div>
 
-	<!-- Progress Bar -->
+	<!-- Progress Bar with Milestones -->
 	<div class="progress-container">
 		<div class="progress-track">
+			<!-- Spint7: Milestone tick marks -->
+			{#each milestones as milestone}
+				<div 
+					class="milestone" 
+					style="left: calc({milestone}%)"
+					aria-hidden="true"
+					data-testid="milestone-{milestone}"
+				>
+					<div class="milestone-tooltip">{milestone}% milestone</div>
+				</div>
+			{/each}
+
+			<div class="progress-target" style="width: {targetPercent}%" data-testid="progress-target" data-percent={targetPercent}></div>
+			<div class="progress-animated" style="width: {animatedPercent}%" data-testid="progress-animated" data-percent={animatedPercent}></div>
 			<!-- Light bar (target) - snaps immediately -->
 			<div 
 				class="progress-target" 
@@ -93,6 +109,14 @@
 				data-testid="progress-animated"
 				data-percent={animatedPercent}
 			></div>
+			<!-- Goal Line -->
+			 <div 
+				class="goal-line {animatedPercent >= target ? 'goal-reached' : ''}" 
+				style="left: calc({target}% - 1px)"
+				data-testid="goal-line"
+			>
+				<span class="goal-label">{target}%</span>
+			</div>
 		</div>
 	</div>
 </div>
@@ -105,6 +129,35 @@
 		padding: 1rem;
 		border: 1px solid #ccc;
 		border-radius: 0.5rem;
+	}
+
+	.milestone {
+		position: absolute;
+		top: 0;
+		height: 100%;
+		width: 1px;
+		background: rgba(0, 0, 0, 0.2);
+		z-index: 5;
+	}
+
+	.milestone-tooltip {
+		position: absolute;
+		top: -30px;
+		left: 50%;
+		transform: translateX(-50%);
+		background: rgba(0, 0, 0, 0.8);
+		color: white;
+		padding: 4px 8px;
+		border-radius: 4px;
+		font-size: 12px;
+		white-space: nowrap;
+		opacity: 0;
+		transition: opacity 0.3s;
+		pointer-events: none;
+	}
+
+	.milestone:hover .milestone-tooltip {
+		opacity: 1;
 	}
 
 	.task-list {
@@ -166,5 +219,28 @@
 		background: #4caf50; /* Dark green - animates */
 		border-radius: 12px;
 		transition: width 1s ease-out; /* 1 second animation */
+	}
+
+	.goal-line {
+		position: absolute;
+		top: 0;
+		height: 100%;
+		width: 2px;
+		background: #f44336;
+	}
+
+	.goal-line.goal-reached {
+		background: #2e7d32;
+	}
+
+	.goal-label {
+		position: absolute;
+		top: -1.25rem;
+		left: 50%;
+		transform: translateX(-50%);
+		font-size: 0.75rem;
+		color: #555;
+		font-weight: 500;
+		white-space: nowrap;
 	}
 </style>
